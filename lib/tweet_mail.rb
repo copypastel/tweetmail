@@ -9,9 +9,9 @@ ActionMailer::Base.delivery_method = :smtp
 ActionMailer::Base.smtp_settings = {
   :address  => "smtp.gmail.com",
   :port  => 587, 
-  :domain => 'copypastel.com',
-  :user_name  => "tweetmail@copypastel.com",
-  :password  => "tweetmailer",
+  :domain => '',
+  :user_name  => "",
+  :password  => "",
   :authentication  => :plain
 }
 
