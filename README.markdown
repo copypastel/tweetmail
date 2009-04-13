@@ -18,6 +18,8 @@ Dependencies
 Usage
 -----
 
+Edit `lib/tweet_mail.rb` by entering your SMTP server's information for emailing. If you have a Gmail account, its details should work just fine.
+
 Run `bin/tweetmail` with a twitter username and an email to send the @reply twitters to. It's suggested to run the script with `-w` to write a config file that keeps track of the latest @reply twitter that was sent. Afterwards, run `bin/tweetmail` with the `-c` option, specifying the previous config file which should rest neatly inside `config/`.
 
 Lessons Learned
