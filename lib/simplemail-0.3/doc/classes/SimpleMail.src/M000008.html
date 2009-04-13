@@ -1,0 +1,152 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>send (SimpleMail)</title>
+<link rel=StyleSheet href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body bgcolor="white">
+<pre><span class="cmt"># File simplemail.rb, line 192</span>
+  <span class="kw">def</span> send
+    <span class="kw">if</span> ((@text != <span class="str">&quot;&quot;</span>) &amp;&amp;
+        (@html == <span class="str">&quot;&quot;</span>) &amp;&amp;
+        (@attachments.size == 0))
+      <span class="cmt"># --TEXT ONLY</span>
+
+      <span class="kw">return</span> sendToMailCmd(@to,
+                           @subject,
+                           allHeaders,
+                           @text)
+                           
+    <span class="kw">elsif</span>((@text != <span class="str">&quot;&quot;</span>) &amp;&amp;
+          (@html != <span class="str">&quot;&quot;</span>) &amp;&amp;
+          (@attachments.size == 0))
+
+      <span class="cmt"># --HTML AND TEXT</span>
+      
+      <span class="cmt"># --get random boundary for content types</span>
+      textBoundary = getRandomBoundary
+      <span class="cmt"># --format headers for text and html portions</span>
+      textHeader = formatTextHeader
+      htmlHeader = formatHTMLHeader
+      
+      <span class="cmt"># --start with caller-supplied headers</span>
+      mailHeader = allHeaders
+      <span class="cmt"># --set MIME-Version</span>
+      mailHeader += <span class="str">&quot;MIME-Version: 1.0\n&quot;</span>
+      <span class="cmt"># --set up main content header with boundary</span>
+      mailHeader += <span class="str">&quot;Content-Type: multipart/alternative;\n&quot;</span>
+      mailHeader += <span class="str">' boundary=&quot;'</span> + textBoundary + <span class="str">'&quot;'</span>
+      mailHeader += <span class="str">&quot;\n\n\n&quot;</span>
+      <span class="cmt"># --add text and boundaries</span>
+      mailHeader += <span class="str">&quot;--&quot;</span> + textBoundary + <span class="str">&quot;\n&quot;</span>
+      mailHeader += textHeader + <span class="str">&quot;\n&quot;</span>
+      mailHeader += <span class="str">&quot;--&quot;</span> + textBoundary + <span class="str">&quot;\n&quot;</span>
+      <span class="cmt"># --add html and ending boundary</span>
+      mailHeader += htmlHeader
+      mailHeader += <span class="str">&quot;\n--&quot;</span> + textBoundary + <span class="str">&quot;--&quot;</span>
+      <span class="cmt"># --send message</span>
+      <span class="kw">return</span> sendToMailCmd(@to,
+                           @subject,
+                           mailHeader,
+                           <span class="str">&quot;&quot;</span>)
+    <span class="kw">elsif</span>((@text != <span class="str">&quot;&quot;</span>) &amp;&amp;
+          (@html != <span class="str">&quot;&quot;</span>) &amp;&amp;
+          (@attachments.size &gt; 0))
+      
+      <span class="cmt"># --HTML AND TEXT AND ATTACHMENTS</span>
+      
+      <span class="cmt"># --get random boundary for attachments</span>
+      attachmentBoundary = getRandomBoundary
+      
+      <span class="cmt"># --start with caller-supplied headers</span>
+      mailHeader = allHeaders
+      <span class="cmt"># --set MIME-Version</span>
+      mailHeader += <span class="str">&quot;MIME-Version: 1.0\n&quot;</span>
+      <span class="cmt"># --set main header for all parts and boundary</span>
+      mailHeader += <span class="str">&quot;Content-Type: multipart/mixed;\n&quot;</span>
+      mailHeader += <span class="str">' boundary=&quot;'</span> + attachmentBoundary + <span class="str">'&quot;'</span> + <span class="str">&quot;\n\n&quot;</span>
+      <span class="cmt">#mailHeader += &quot;This is a multi-part message in MIME format.\n&quot;</span>
+      mailHeader += <span class="str">&quot;--&quot;</span> + attachmentBoundary + <span class="str">&quot;\n&quot;</span>
+      
+      <span class="cmt"># --TEXT AND HTML--</span>
+      <span class="cmt"># --get random boundary for content types</span>
+      textBoundary = getRandomBoundary(1)
+      <span class="cmt"># --format headers</span>
+      textHeader = formatTextHeader
+      htmlHeader = formatHTMLHeader
+      <span class="cmt"># --set up main content header with boundary</span>
+      mailHeader += <span class="str">&quot;Content-Type: multipart/alternative;\n&quot;</span>
+      mailHeader += <span class="str">' boundary=&quot;'</span> + textBoundary + <span class="str">'&quot;'</span>
+      mailHeader += <span class="str">&quot;\n\n\n&quot;</span>
+      <span class="cmt"># --add text and boundaries</span>
+      mailHeader += <span class="str">&quot;--&quot;</span> + textBoundary + <span class="str">&quot;\n&quot;</span>
+      mailHeader += textHeader
+      mailHeader += <span class="str">&quot;--&quot;</span> + textBoundary + <span class="str">&quot;\n&quot;</span>
+      <span class="cmt"># --add html and ending boundary</span>
+      mailHeader += htmlHeader
+      mailHeader += <span class="str">&quot;\n--&quot;</span> + textBoundary + <span class="str">&quot;--&quot;</span>
+      <span class="cmt"># --END TEXT AND HTML</span>
+      <span class="cmt"># --get array of attachment filenames</span>
+      <span class="kw">if</span> @attachments &amp;&amp; @attachments.size != 0
+        <span class="cmt"># --loop through each attachment</span>
+        @attachments.each { |item|
+          <span class="cmt"># --attachment separator</span>
+          mailHeader += <span class="str">&quot;\n--&quot;</span> + attachmentBoundary + <span class="str">&quot;\n&quot;</span>
+          <span class="cmt"># --get attachment info</span>
+          mailHeader += formatAttachmentHeader(item)
+        }
+        mailHeader += <span class="str">&quot;--&quot;</span> + attachmentBoundary + <span class="str">&quot;--&quot;</span>
+      <span class="kw">end</span>
+
+      <span class="kw">return</span> sendToMailCmd(@to,
+                           @subject,
+                           mailHeader,
+                           <span class="str">&quot;&quot;</span>)
+    <span class="kw">elsif</span>((@text != <span class="str">&quot;&quot;</span>) &amp;&amp;
+          (@html == <span class="str">&quot;&quot;</span>) &amp;&amp;
+          (@attachments.size &gt; 0))
+      
+      <span class="cmt"># --TEXT AND ATTACHMENTS</span>
+      
+      <span class="cmt"># --get random boundary for attachments</span>
+      attachmentBoundary = getRandomBoundary
+      
+      <span class="cmt"># --start with caller-supplied headers</span>
+      mailHeader = allHeaders
+      <span class="cmt"># --set MIME-Version</span>
+      mailHeader += <span class="str">&quot;MIME-Version: 1.0\n&quot;</span>
+      <span class="cmt"># --set main header for all parts and boundary</span>
+      mailHeader += <span class="str">&quot;Content-Type: multipart/mixed;\n&quot;</span>
+      mailHeader += <span class="str">' boundary=&quot;'</span> + attachmentBoundary + <span class="str">'&quot;'</span> + <span class="str">&quot;\n\n&quot;</span>
+      <span class="cmt">#mailHeader += &quot;This is a multi-part message in MIME format.\n&quot;</span>
+      mailHeader += <span class="str">&quot;--&quot;</span> + attachmentBoundary + <span class="str">&quot;\n&quot;</span>
+      
+      <span class="cmt"># --TEXT</span>
+      <span class="cmt"># --format headers</span>
+      textHeader = formatTextHeader
+      <span class="cmt"># --add text</span>
+      mailHeader += textHeader
+      <span class="cmt"># --END TEXT</span>
+      <span class="cmt"># --get array of attachment filenames</span>
+      <span class="kw">if</span> @attachments &amp;&amp; @attachments.size != 0
+        <span class="cmt"># --loop through each attachment</span>
+        @attachments.each { |item|
+          <span class="cmt"># --attachment separator</span>
+          mailHeader += <span class="str">&quot;\n--&quot;</span> + attachmentBoundary + <span class="str">&quot;\n&quot;</span>
+          <span class="cmt"># --get attachment info</span>
+          mailHeader += formatAttachmentHeader(item)
+        }
+        mailHeader += <span class="str">&quot;--&quot;</span> + attachmentBoundary + <span class="str">&quot;--&quot;</span>
+      <span class="kw">end</span>
+
+      <span class="kw">return</span> sendToMailCmd(@to,
+                           @subject,
+                           mailHeader,
+                           <span class="str">&quot;&quot;</span>)
+    <span class="kw">end</span>
+    <span class="kw">return</span> -1
+  <span class="kw">end</span></pre>
+</body>
+</html>

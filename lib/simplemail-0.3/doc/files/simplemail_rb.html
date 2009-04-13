@@ -1,0 +1,131 @@
+
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: simplemail.rb</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel=StyleSheet href=".././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript" language="JavaScript">
+  <!--
+  function popCode(url) {
+    window.open(url, "Code", 
+          "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  //-->
+  </script>
+</head>
+
+<body bgcolor="white">
+<table summary="Information on file" width="100%">
+ <tr class="title-row">
+ <td><table summary="layout" width="100%"><tr>
+   <td class="big-title-font" colspan="2">simplemail.rb</td>
+   <td align="right"><table summary="layout" cellspacing="0" cellpadding="2">
+         <tr>
+           <td  class="small-title-font">Path:</td>
+           <td class="small-title-font">simplemail.rb</td>
+         </tr>
+         <tr>
+           <td class="small-title-font">Modified:</td>
+           <td class="small-title-font">Sat Jun 07 22:09:01 EST 2003</td>
+         </tr>
+        </table>
+    </td></tr></table></td>
+  </tr>
+</table>
+  <!-- banner header -->
+
+
+
+<div class="description"><h1><a href="../classes/SimpleMail.html">SimpleMail</a></h1>
+<p>
+Copyright (C) 1999 R.Chambers
+</p>
+<p>
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+</p>
+<p>
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+</p>
+<p>
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc., 59
+Temple Place, Suite 330, Boston, MA 02111-1307 USA
+</p>
+<h2>Name</h2>
+<pre>
+ simplemail.rb - Provides a simple interface to popen'd sendmail.
+
+ $Id: simplemail_rb.html,v 1.4 2003/06/07 12:28:24 nigelb Exp $
+</pre>
+<h2>Synopsis</h2>
+<pre>
+      mail = SimpleMail.new
+      mail.to = &quot;Colin &lt;colin@rubycookbook.org&gt;&quot;
+      mail.from = &quot;colin@rubycookbook.org&quot;
+      mail.sender = &quot;bounce@rubycookbook.org&quot;
+      mail.subject = &quot;This is a test&quot;
+      mail.text = &quot;This is some text in the text.&quot;
+      mail.html = &quot;&lt;b&gt;big html stuff&lt;/b&gt;&quot;
+      mail.headers[&quot;X-Foobar&quot;] = &quot;Baz&quot;
+      mail.attachementst &lt;&lt; &quot;/path/to/attachement/file.ext&quot;
+      mail.send
+</pre>
+<h2>Description</h2>
+<p>
+<a href="../classes/SimpleMail.html">SimpleMail</a> is a simple wrapper
+class which popen&#8217;s sendmail(1) to send email. It supports
+attachements and mutlipart/mixed messages with text and html content. This
+makes it ideal for mailing list type applications
+</p>
+<h2>History</h2>
+<pre>
+ Date            Name                    Description
+ 10/21/1999      R.Chambers              created
+ 03/05/2001      Colin Steele            updated and ported to Ruby
+ 03/02/2002      Nigel Ball              added installer
+                                         fixed mixed + attachments
+                                         converted to rdoc
+ $Log: simplemail_rb.html,v $
+ Revision 1.4  2003/06/07 12:28:24  nigelb
+ Updated documentation and romoved broken test. Upgraded install
+ to use installpgk. Cleaned up readme file. Made internal methods
+ private.
+
+ Revision 1.7  2003/05/28 17:02:47  nigelb
+ Added support for text + attachments and fixed bug in attachment code
+ which left the uuencode header line in the file. This upsets some
+ applications.
+</pre>
+</div>
+
+<table summary="Requires" cellpadding="5" width="100%">
+<tr><td class="tablesubtitle">Required files</td></tr>
+</table>
+<div class="name-list">
+md5&nbsp; &nbsp;
+</div>
+
+
+
+
+<table summary="List of classes" cellpadding="5" width="100%">
+<tr><td class="tablesubtitle">Classes and Modules</td></tr>
+</table>
+<div class="classlist">
+Class <a href="../classes/SimpleMail.html" class="link">SimpleMail</a><br />
+
+</div>
+
+
+
+</body>
+</html>

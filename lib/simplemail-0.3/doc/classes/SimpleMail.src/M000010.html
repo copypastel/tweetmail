@@ -1,0 +1,58 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>formatAttachmentHeader (SimpleMail)</title>
+<link rel=StyleSheet href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body bgcolor="white">
+<pre><span class="cmt"># File simplemail.rb, line 377</span>
+  <span class="kw">def</span> formatAttachmentHeader (inFileLocation)
+    
+    outAttachmentHeader = <span class="str">&quot;&quot;</span>
+    
+    <span class="cmt"># --get content type based on file extension</span>
+    contentType = getContentType(inFileLocation)
+    
+    <span class="cmt"># --if content type is TEXT the standard 7bit encoding</span>
+    <span class="kw">if</span> contentType =~ <span class="re">/text/</span>
+      <span class="cmt"># --format header</span>
+      outAttachmentHeader  += <span class="str">&quot;Content-Type: &quot;</span> + contentType + <span class="str">&quot;;\n&quot;</span>
+      outAttachmentHeader  += <span class="str">' name=&quot;'</span> + File.basename(inFileLocation) +
+                              <span class="str">'&quot;'</span> + <span class="str">&quot;\n&quot;</span>
+      outAttachmentHeader  += <span class="str">&quot;Content-Transfer-Encoding: 7bit\n&quot;</span>
+      outAttachmentHeader  += <span class="str">&quot;Content-Disposition: attachment;\n&quot;</span>;
+      outAttachmentHeader  += <span class="str">' filename=&quot;'</span> + File.basename(inFileLocation) +
+                              <span class="str">'&quot;'</span> + <span class="str">&quot;\n\n&quot;</span>
+      textFile = File.new(inFileLocation)
+      <span class="cmt"># --loop through file, line by line</span>
+      outAttachmentHeader += textFile.readlines.join(<span class="str">&quot;\n&quot;</span>)
+      textFile.close
+      outAttachmentHeader  += <span class="str">&quot;\n&quot;</span>
+      
+      <span class="cmt"># --NON-TEXT use 64-bit encoding</span>
+    <span class="kw">else</span>
+      <span class="cmt"># --format header</span>
+      outAttachmentHeader  += <span class="str">&quot;Content-Type: &quot;</span> + contentType + <span class="str">&quot;;\n&quot;</span>
+      outAttachmentHeader  += <span class="str">' name=&quot;'</span> + File.basename(inFileLocation) +
+                              <span class="str">'&quot;'</span> + <span class="str">&quot;\n&quot;</span>
+      outAttachmentHeader  += <span class="str">&quot;Content-Transfer-Encoding: base64\n&quot;</span>
+      outAttachmentHeader  += <span class="str">&quot;Content-Disposition: attachment;\n&quot;</span>;
+      outAttachmentHeader  += <span class="str">' filename=&quot;'</span> + File.basename(inFileLocation) +
+                              <span class="str">'&quot;'</span> + <span class="str">&quot;\n\n&quot;</span>
+      <span class="cmt"># --call uuencode - output is returned to the return array</span>
+      res = `uuencode -m #{inFileLocation} #{File.basename(inFileLocation)}`
+      <span class="cmt"># --add each line returned</span>
+      <span class="cmt"># discard the first line</span>
+      resLines = res.split(<span class="str">&quot;\n&quot;</span>)
+      resLines.delete_at(0)
+      res = resLines.join(<span class="str">&quot;\n&quot;</span>)
+      outAttachmentHeader  += res
+    <span class="kw">end</span>
+    
+    outAttachmentHeader
+
+  <span class="kw">end</span></pre>
+</body>
+</html>

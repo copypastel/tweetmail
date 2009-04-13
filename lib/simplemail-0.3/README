@@ -1,0 +1,17 @@
+README - SimpleMail
+===================
+
+DOCUMENTATION
+=============
+refer to doc/index.html
+
+INSTALL
+=======
+Requires installpkg available from RAA http://www.ruby-lang.org
+
+   ($ su)
+    # ruby install.rb
+
+$Id: README,v 1.2 2003/06/07 12:28:24 nigelb Exp $
+$Author: nigelb $
+
