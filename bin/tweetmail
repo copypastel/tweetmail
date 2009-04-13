@@ -1,10 +1,18 @@
-#!/usr/bin/env ruby -wKU
+#!/usr/bin/env ruby -KU
 
-%w:rubygems twitter ../lib/twitter_ext.rb optparse optparse/date optparse/time:.each {|lib| require lib}
+# Frozen gems
+%w:rubygems twitter:.each {|lib| require lib}
+
+# Standard libraries
+%w:optparse optparse/date optparse/time ostruct:.each {|lib| require lib}
+
+# Local libs
+%w:../lib/twitter_ext ../lib/tweet_mail:.each {|lib| require lib}
+
+# Option Parsing
 
 options = {}
-
-OptionParser.new do |opts|
+parser = OptionParser.new do |opts|
   opts.banner = "Usage: tweetmail [username] [email]"
 
   opts.separator ""
@@ -14,18 +22,84 @@ OptionParser.new do |opts|
     options[:since] = s
   end
   
-  opts.on("-c", "--config FILE", "Configuration file with date and time of last fetched tweet, e.g. --config ecin.yaml") do |s|
+  opts.on("-c", "--config FILE", "Configuration file , e.g. --config ecin.yaml") do |s|
     options[:config] = c
   end
   
   
-  opts.on("-n", "--note", "Write out configuration file after emailing the tweets.") do |s|
-    options[:config] = c
+  opts.on("-n", "--note", "Write out configuration file after emailing the tweets.") do |n|
+    options[:note] = n
   end
   
   opts.on_tail("-h", "--help", "Show this message.") do
     puts opts
     exit
   end
-end.parse!
+end
 
+# Check cli arguments
+if ARGV.length != 2 or (ARGV[1] =~ /\w+@\w+\.\w+/).nil?
+  puts parser
+  exit
+end
+
+class App
+  
+  attr_accessor :arguments, :options
+  alias :args :arguments
+  
+  def initialize(argv, options = {})
+    @arguments = argv
+    @options = options
+  end
+  
+end
+
+module TweetMail
+  
+  Twitter.extend TwitterExt
+  
+  attr_accessor :username, :email, :since
+  
+  def run
+    
+    # Set attributes from command line arguments or config file
+    
+    if config = @options[:config]
+      ostruct = TweetMailHelpers::read_config(config)
+      @username = ostruct.username
+      @email = ostruct.email
+      @since = ostruct.since
+    else
+      @username = args[0]
+      @email = args[1]
+      @since = options[:since]
+    end
+    
+    # Get the @reply tweets
+    
+    replies = Twitter::Replies(@username, @since)
+    
+    # Send out emails
+    
+    TweetMail::send(@email, replies)
+    
+    # Write a new configuration file for later use
+    
+    if @options[:note]
+      TweetMailHelpers::write_config(@username, @email, @since)
+    end
+    
+    # Log what just happened
+    
+    File.open('log.txt', 'w+') do |file|
+      file << "Sent #{replies.size} @replies to #{@email} at around #{Time.now}."
+    end
+    
+  end
+  
+end
+
+tm = App.new( ARGV, options )
+tm.extend TweetMail
+tm.run
