@@ -18,16 +18,16 @@ parser = OptionParser.new do |opts|
   opts.separator ""
   opts.separator "Options:"
 
-  opts.on("-s", "--since DATETIME", DateTime, "Email @reply tweets since a specified date and time, e.g. --since '1:20pm 20 october 2009'") do |s|
+  opts.on("-s", "--since ID", "Email @reply tweets since a specified tweet id, e.g. --since 1378993302") do |s|
     options[:since] = s
   end
   
-  opts.on("-c", "--config FILE", "Configuration file , e.g. --config ecin.yaml") do |s|
+  opts.on("-c", "--config FILE", "Configuration file , e.g. --config config/ecin.yaml") do |c|
     options[:config] = c
   end
   
   
-  opts.on("-n", "--note", "Write out configuration file after emailing the tweets.") do |n|
+  opts.on("-w", "--write", "Write out configuration file after emailing the tweets.") do |n|
     options[:note] = n
   end
   
@@ -98,8 +98,8 @@ module TweetMail
     
     # Log what just happened
     
-    File.open('log.txt', 'w+') do |file|
-      file << "Sent #{@replies.size} @replies to #{@email} at around #{Time.now.strftime("%H:%M%p %Z on %B %d, %Y")}."
+    File.open('log.txt', 'a') do |file|
+      file << "Sent #{@replies.size} @replies to #{@email} at around #{Time.now.strftime("%H:%M%p %Z on %B %d, %Y")}.\n"
     end
     
   end
