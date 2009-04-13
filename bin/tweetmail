@@ -1,0 +1,31 @@
+#!/usr/bin/env ruby -wKU
+
+%w:rubygems twitter ../lib/twitter_ext.rb optparse optparse/date optparse/time:.each {|lib| require lib}
+
+options = {}
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: tweetmail [username] [email]"
+
+  opts.separator ""
+  opts.separator "Options:"
+
+  opts.on("-s", "--since DATETIME", DateTime, "Email @reply tweets since a specified date and time, e.g. --since '1:20pm 20 october 2009'") do |s|
+    options[:since] = s
+  end
+  
+  opts.on("-c", "--config FILE", "Configuration file with date and time of last fetched tweet, e.g. --config ecin.yaml") do |s|
+    options[:config] = c
+  end
+  
+  
+  opts.on("-n", "--note", "Write out configuration file after emailing the tweets.") do |s|
+    options[:config] = c
+  end
+  
+  opts.on_tail("-h", "--help", "Show this message.") do
+    puts opts
+    exit
+  end
+end.parse!
+
