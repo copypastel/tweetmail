@@ -1,0 +1,5 @@
+--- !ruby/object:OpenStruct 
+table: 
+  :username: twitter
+  :email: you@awesomeness.com
+  :since: 1379013457
