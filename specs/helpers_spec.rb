@@ -10,9 +10,10 @@ describe TweetMailHelpers do
   
   before :all do
     Twitter.extend TwitterExt
+    @since = 1378993302
     @username = 'ecin'
     @email = 'ecin@copypastel.com'
-    @replies = Twitter::Replies(@username)
+    @replies = Twitter::Replies(@username, @since)
     @latest = @replies.first.when?
   end
   
@@ -23,9 +24,9 @@ describe TweetMailHelpers do
   
   it "should load from a config YAML file" do
     config = read_config(@username)
+    config.since.should eql(@replies.first.id)
     config.username.should eql(@username)
     config.email.should eql(@email)
-    config.datetime.should eql(@latest)
   end
   
   after :all do

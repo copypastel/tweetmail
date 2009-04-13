@@ -2,8 +2,8 @@ require 'ostruct'
 
 module TweetMailHelpers
   
-  def write_config( username, email, replies)
-    body = OpenStruct.new :username => username, :email => email, :datetime => replies.first.when?
+  def write_config(username, email, replies)
+    body = OpenStruct.new :username => username, :email => email, :since => replies.first.id
     filename = username + '.yaml'
     config = File.open( filename, 'w' )
     config << YAML::dump(body)
