@@ -10,8 +10,8 @@ module TweetMailHelpers
     config.close
   end
   
-  def self.read_config( username )
-    filename = 'config/' + username + '.yaml'
+  def self.read_config( file )
+    filename = file
     file = File.open( filename, 'r' )
     config = YAML::load(file.read)
     file.close
