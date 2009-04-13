@@ -17,33 +17,27 @@ ActionMailer::Base.smtp_settings = {
 
 
 class Notifier < ActionMailer::Base
-  def tweet_update(email,formatted_tweets)
+  def tweet_update(email,body_html)
      recipients email
      from       "tweetmail@copypastel.com"
      subject    "You have new tweets"
-     body       formatted_tweets
+     body       body_html
      content_type "text/html"
   end
 end
 
 module TweetMail
-  def self.send(email,tweets = [])
-    Notifier.deliver_tweet_update(email,format_tweets(tweets)) unless tweets == []
+  def self.send(email,replies = [])
+    Notifier.deliver_tweet_update(email,format_replies(replies)) unless replies == []
   end
   
-  def self.format_tweets(tweets)
+  def self.format_replies(replies)
     html = '<center><b>You have tweets!</b></center><br/><br/>'
-    tweets.each do |tweet|
-      html += "<a href='http://twitter.com/#{tweet.from}'>#{tweet.from}</a><br/>"
-      html += tweet.msg
+    replies.each do |reply|
+      html += "<a href='http://twitter.com/#{reply.from}'>#{reply.from}</a> at #{reply.when}<br/>"
+      html += reply.msg
       html += "<br/><br/>"
     end
     html
   end
 end
-
-class TestTweet < Struct.new(:from,:msg)
-end
-
-TweetMail.send("ecin@copypastel.com",[TestTweet.new("Bob","Hello Man"),TestTweet.new("ecin","I like gay boys.")])
-puts "done"
