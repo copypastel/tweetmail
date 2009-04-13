@@ -9,7 +9,13 @@ describe Twitter.extend(TwitterExt) do
   describe Reply do
 
     before :all do
-      @reply = Reply.new( 'ecin', 'daicoden', 'bar')
+      @now = Time.now
+      @id = 12312313123
+      @reply = Reply.new(@id, 'ecin', 'daicoden', 'bar', @now)
+    end
+
+    it "should hold a :id attribute" do
+      @reply.id.should eql(@id)
     end
 
     it "should hold a :from attribute" do
@@ -20,9 +26,13 @@ describe Twitter.extend(TwitterExt) do
       @reply.message.should eql('bar')
       @reply.msg.should eql('bar')
     end
-    
+
     it "should hold a :to attribute" do
       @reply.to.should eql('daicoden')
+    end
+
+    it "should hold a :when? attribute" do
+      @reply.when?.should equal(@now)
     end
 
   end
@@ -59,6 +69,31 @@ describe Twitter.extend(TwitterExt) do
       end
     end
 
-  end
+    it "should return replies directed at @username" do
+      @replies.each do |r|
+        r.to.should eql(@username)
+      end
+    end
 
+    it "should return replies with timestamps" do
+      @replies.each do |r|
+        r.when?.class.should be(Time)
+      end
+    end
+
+    describe "when provided with a @since argument" do
+
+      before :all do
+        @since = 1378993302
+        @replies = Twitter::Replies(@username, @since)
+      end
+
+      it "should only return replies with id higher than @since" do
+        @replies.each do |r|
+          r.when?.should > @since
+        end
+      end
+    end
+  end
+  
 end
