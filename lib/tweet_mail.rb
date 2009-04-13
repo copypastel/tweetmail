@@ -1,18 +1,21 @@
 #tweeter is the tweet mailer.
 require 'rubygems'
 require 'actionmailer'
+require 'yaml'
 require File.join(File.dirname(__FILE__), "smtp_tls")
 
 # Actionmailer config
+config = File.open(File.join(File.dirname(__FILE__),'config.yaml'))
 ActionMailer::Base.raise_delivery_errors = true
 ActionMailer::Base.delivery_method = :smtp
 ActionMailer::Base.smtp_settings = {
-  :address  => "smtp.gmail.com",
-  :port  => 587, 
-  :domain => '',
-  :user_name  => "",
-  :password  => "",
-  :authentication  => :plain
+  :address  => config.address,
+  :port  => config.port, 
+  :domain => config.domain,
+  :user_name  => config.user_name,
+  :password  => config.password,
+  :authentication  => config.authentication
+  
 }
 
 
