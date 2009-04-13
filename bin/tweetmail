@@ -7,7 +7,7 @@
 %w:optparse optparse/date optparse/time ostruct:.each {|lib| require lib}
 
 # Local libs
-%w:../lib/twitter_ext ../lib/tweet_mail:.each {|lib| require lib}
+%w:lib/twitter_ext lib/tweet_mail lib/helpers:.each {|lib| require lib}
 
 # Option Parsing
 
@@ -37,8 +37,11 @@ parser = OptionParser.new do |opts|
   end
 end
 
+parser.parse!
+
 # Check cli arguments
-if ARGV.length != 2 or (ARGV[1] =~ /\w+@\w+\.\w+/).nil?
+
+if ARGV.length != 2 or (ARGV[1] =~ /\w+@\w+\.\w+/).nil? and options[:config].nil?
   puts parser
   exit
 end
@@ -78,11 +81,14 @@ module TweetMail
     
     # Get the @reply tweets
     
-    replies = Twitter::Replies(@username, @since)
+    @replies = Twitter::Replies(@username, @since)
     
     # Send out emails
     
-    TweetMail::send(@email, replies)
+    unless @replies.empty?
+      TweetMail::send(@email, @replies) 
+      @since = @replies.first.id
+    end
     
     # Write a new configuration file for later use
     
@@ -93,7 +99,7 @@ module TweetMail
     # Log what just happened
     
     File.open('log.txt', 'w+') do |file|
-      file << "Sent #{replies.size} @replies to #{@email} at around #{Time.now}."
+      file << "Sent #{@replies.size} @replies to #{@email} at around #{Time.now.strftime("%H:%M%p %Z on %B %d, %Y")}."
     end
     
   end
