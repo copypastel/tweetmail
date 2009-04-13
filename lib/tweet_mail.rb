@@ -34,8 +34,7 @@ module TweetMail
   def self.format_replies(replies)
     html = '<center><b>You have @tweets!</b></center><br/><br/>'
     replies.each do |reply|
-      html += "<a href='http://twitter.com/#{reply.from}'>#{reply.from}</a> at #{reply.when.strftime("%H:%M%p %Z on %B %d, %Y")
-      }<br/>"
+      html += "<a href='http://twitter.com/#{reply.from}'>#{reply.from}</a> at #{reply.when.strftime("%H:%M%p %Z on %B %d, %Y")}<br/>"
       html += reply.msg
       html += "<br/><br/>"
     end
