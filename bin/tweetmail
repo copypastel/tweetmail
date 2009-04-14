@@ -76,6 +76,8 @@ module TweetMail
       @username = ostruct.username
       @email = ostruct.email
       @since = ostruct.since
+    elsif args[0].nil?
+      ostruct = TweetMail::Helpers::read_config(File.join(File.dirname(__FILE__), "..","config","user-config.yaml"))
     else
       @username = args[0]
       @email = args[1]
@@ -83,7 +85,7 @@ module TweetMail
     end
     
     server = (@options[:server].nil?) ? 
-      TweetMail::Helpers::read_config('config/server-settings.yaml') :
+      TweetMail::Helpers::read_config(File.join(File.dirname(__FILE__),'..','config','server-settings.yaml') :
       TweetMail::Helpers::read_config(@options[:server])
       
     TweetMail::Helpers::set_mailer_smtp_settings(server)
@@ -107,7 +109,7 @@ module TweetMail
     
     # Log what just happened
     
-    File.open('log.txt', 'a') do |file|
+    File.open(File.join(File.dirname(__FILE__), '..','log','log.txt', 'a') do |file|
       file << "Sent #{@replies.size} @replies to #{@email} at around #{Time.now.strftime("%H:%M%p %Z on %B %d, %Y")}.\n"
     end
     

@@ -2,6 +2,7 @@
 require 'rubygems'
 require 'actionmailer'
 require 'ostruct'
+require File.join(File.dirname(__FILE__), "helpers")
 require File.join(File.dirname(__FILE__), "smtp_tls")
 
 # Actionmailer config
@@ -13,7 +14,7 @@ module TweetMail
   class Notifier < ActionMailer::Base
     def tweet_update(email,body_html)
       recipients email
-      from       "tweetmail@copypastel.com"
+      from       ServerSettings.get[:user_name]
       subject    "You have new tweets"
       body       body_html
       content_type "text/html"
@@ -32,5 +33,17 @@ module TweetMail
       html += "<br/><br/>"
     end
     html
+  end
+  
+  #Storage class for helping ActionMailer
+  class ServerSettings
+     @@settings = {}
+     def self.set(settings)
+       @@settings = settings
+     end
+
+     def self.get
+       @@settings
+     end
   end
 end

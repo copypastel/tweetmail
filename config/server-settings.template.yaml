@@ -1,8 +1,11 @@
---- !ruby/object:OpenStruct 
-table:
-  :address: smtp.gmail.com
-  :port: 587 
-  :domain: yourdomain.com
-  :user_name: sample@yourdomain.com
-  :password: samplepassword
-  :authentication: :plain
+#-----------------------------------------------------------------------#
+# These settings are set up for gmail, for other configurations google! #
+  :address:        smtp.gmail.com                                       #
+  :port:           587                                                  #
+  :authentication: :plain                                               #
+#------------------------------------------------------------#----------#
+# Change these for your gmail account or gmail hosted domain #
+  :domain:    yourdomain.com         # or gmail.com          #
+  :user_name: sample@yourdomain.com  # or login@gmail.com    #
+  :password:  samplepassword                                 #
+#------------------------------------------------------------#
