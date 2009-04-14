@@ -13,6 +13,8 @@ Dependencies
 
 
 * actionmailer
+* ostruct
+* yaml
 * twitter
 
 Usage
@@ -31,4 +33,5 @@ Lessons Learned
 * `require 'time'` may be needed for Time#parse to become available; try it out in IRB
 * on a related note, there aren't many reasons to use DateTime over Time
 * Time.parse works on '10:30am october 20 2009'; not so much luck on '10:30am 20 october 2009'
+* ostruct is needed to access the fields from the yaml object
 
