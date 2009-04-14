@@ -20,9 +20,9 @@ Dependencies
 Usage
 -----
 
-Edit `config/config.template.yaml` by entering your SMTP server's information for emailing and save it as config.yaml.  The example is set up for gmail.
+Edit `config/server-settings.template.yaml` by entering your SMTP server's information for emailing and save it as config.yaml.  The example is set up for gmail.  If you wish you may edit `user-config.template.yaml` and supply it as a command line option specified later.
 
-Run `bin/tweetmail` with a twitter username and an email to send the @reply twitters to. It's suggested to run the script with `-w` to write a config file that keeps track of the latest @reply twitter that was sent. Afterwards, run `bin/tweetmail` with the `-c` option, specifying the previous config file which should rest neatly inside `config/`.
+Run `bin/tweetmail` with a twitter username and an email to send the @reply twitters to. It's suggested to run the script with `-w` to write a config file that keeps track of the latest @reply twitter that was sent. Afterwards, run `bin/tweetmail` with the `-c` option, specifying the previous config file which should rest neatly inside `config/`.  You need to have a server settings config file located at `config/server-settings.yaml`.  If you have more then one server settings file you can use -s to specify which file.
 
 Lessons Learned
 ---------------

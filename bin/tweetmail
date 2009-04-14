@@ -22,10 +22,13 @@ parser = OptionParser.new do |opts|
     options[:since] = s
   end
   
-  opts.on("-c", "--config FILE", "Configuration file , e.g. --config config/ecin.yaml") do |c|
+  opts.on("-c", "--config FILE", "Configuration file for twitter user, e.g. --config config/ecin.yaml") do |c|
     options[:config] = c
   end
   
+  opts.on("-s", "--server FILE", "Configuration file for server, e.g. --server config/server-settings.yaml") do |s|
+    options[:server] = s
+  end
   
   opts.on("-w", "--write", "Write out configuration file after emailing the tweets.") do |n|
     options[:note] = n
@@ -67,9 +70,9 @@ module TweetMail
   def run
     
     # Set attributes from command line arguments or config file
-    
+    #TODO! Fix this to use some sort of default mechanism in opts
     if config = @options[:config]
-      ostruct = TweetMailHelpers::read_config(config)
+      ostruct = TweetMail::Helpers::read_config(config)
       @username = ostruct.username
       @email = ostruct.email
       @since = ostruct.since
@@ -78,6 +81,12 @@ module TweetMail
       @email = args[1]
       @since = options[:since]
     end
+    
+    server = (@options[:server].nil?) ? 
+      TweetMail::Helpers::read_config('config/server-settings.yaml') :
+      TweetMail::Helpers::read_config(@options[:server])
+      
+    TweetMail::Helpers::set_mailer_smtp_settings(server)
     
     # Get the @reply tweets
     
@@ -93,7 +102,7 @@ module TweetMail
     # Write a new configuration file for later use
     
     if @options[:note]
-      TweetMailHelpers::write_config(@username, @email, @since)
+      TweetMail::Helpers::write_config(@username, @email, @since)
     end
     
     # Log what just happened

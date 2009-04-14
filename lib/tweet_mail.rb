@@ -5,29 +5,21 @@ require 'ostruct'
 require File.join(File.dirname(__FILE__), "smtp_tls")
 
 # Actionmailer config
-config = YAML::load_file(File.join(File.dirname(__FILE__),'..','config','config.yaml'))
 ActionMailer::Base.raise_delivery_errors = true
 ActionMailer::Base.delivery_method = :smtp
-ActionMailer::Base.smtp_settings = {
-  :address         => config.address,
-  :port            => config.port, 
-  :domain          => config.domain,
-  :user_name       => config.user_name,
-  :password        => config.password,
-  :authentication  => config.authentication  
-}
-
-class Notifier < ActionMailer::Base
-  def tweet_update(email,body_html)
-     recipients email
-     from       "tweetmail@copypastel.com"
-     subject    "You have new tweets"
-     body       body_html
-     content_type "text/html"
-  end
-end
+#SMTP settings set by helper method
 
 module TweetMail
+  class Notifier < ActionMailer::Base
+    def tweet_update(email,body_html)
+      recipients email
+      from       "tweetmail@copypastel.com"
+      subject    "You have new tweets"
+      body       body_html
+      content_type "text/html"
+    end
+  end
+
   def self.send(email,replies = [])
     Notifier.deliver_tweet_update(email,format_replies(replies)) unless replies == []
   end
