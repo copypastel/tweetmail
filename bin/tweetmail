@@ -10,8 +10,12 @@
 %w:lib/twitter_ext lib/tweet_mail lib/helpers:.each {|lib| require lib}
 
 # Option Parsing
+#default options
+options = {
+  :config => File.join(File.dirname(__FILE__), "..","config","user-config.yaml")
+  :server => File.join(File.dirname(__FILE__),'..','config','server-settings.yaml')
+}
 
-options = {}
 parser = OptionParser.new do |opts|
   opts.banner = "Usage: tweetmail [username] [email]"
 
@@ -31,7 +35,8 @@ parser = OptionParser.new do |opts|
   end
   
   opts.on("-w", "--write", "Write out configuration file after emailing the tweets.") do |n|
-    options[:note] = n
+    if(n) then puts "File is saved as config/supplied_username.yaml."; end
+    options[:write_config] = true
   end
   
   opts.on_tail("-h", "--help", "Show this message.") do
@@ -68,30 +73,19 @@ module TweetMail
   attr_accessor :username, :email, :since
   
   def run
-    
-    # Set attributes from command line arguments or config file
-    #TODO! Fix this to use some sort of default mechanism in opts
-    if config = @options[:config]
-      ostruct = TweetMail::Helpers::read_config(config)
-      @username = ostruct.username
-      @email = ostruct.email
-      @since = ostruct.since
-    elsif args[0].nil?
-      ostruct = TweetMail::Helpers::read_config(File.join(File.dirname(__FILE__), "..","config","user-config.yaml"))
-    else
-      @username = args[0]
-      @email = args[1]
-      @since = options[:since]
-    end
-    
-    server = (@options[:server].nil?) ? 
-      TweetMail::Helpers::read_config(File.join(File.dirname(__FILE__),'..','config','server-settings.yaml') :
-      TweetMail::Helpers::read_config(@options[:server])
-      
+    #Set up SMTP settings
+    server = TweetMail::Helpers::read_config(@options[:server])
     TweetMail::Helpers::set_mailer_smtp_settings(server)
     
-    # Get the @reply tweets
+    # Set attributes from command line arguments or config file
+    if config = @options[:config]
+      ostruct = TweetMail::Helpers::read_config(config)
+      @username,@email,@since = [ ostruct.username, ostruct.email, ostruct.since ]
+    else
+      @username,@email,@since = [ args[0], args[1], options[:since] ]
+    end
     
+    # Get the @reply tweets
     @replies = Twitter::Replies(@username, @since)
     
     # Send out emails
@@ -103,13 +97,13 @@ module TweetMail
     
     # Write a new configuration file for later use
     
-    if @options[:note]
+    if @options[:write_config]
       TweetMail::Helpers::write_config(@username, @email, @since)
     end
     
     # Log what just happened
     
-    File.open(File.join(File.dirname(__FILE__), '..','log','log.txt', 'a') do |file|
+    File.open(File.join(File.dirname(__FILE__), '..','log','log.txt', 'a')) do |file|
       file << "Sent #{@replies.size} @replies to #{@email} at around #{Time.now.strftime("%H:%M%p %Z on %B %d, %Y")}.\n"
     end
     
