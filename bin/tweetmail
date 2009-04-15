@@ -11,7 +11,7 @@
 
 # Option Parsing
 #default options
-options = {
+$OPTIONS = {
   :config => File.join(File.dirname(__FILE__), "..","config","user-config.yaml")
   :server => File.join(File.dirname(__FILE__),'..','config','server-settings.yaml')
 }
@@ -23,20 +23,20 @@ parser = OptionParser.new do |opts|
   opts.separator "Options:"
 
   opts.on("-s", "--since ID", "Email @reply tweets since a specified tweet id, e.g. --since 1378993302") do |s|
-    options[:since] = s
+    $OPTIONS[:since] = s
   end
   
   opts.on("-c", "--config FILE", "Configuration file for twitter user, e.g. --config config/ecin.yaml") do |c|
-    options[:config] = c
+    $OPTIONS[:config] = c
   end
   
   opts.on("-s", "--server FILE", "Configuration file for server, e.g. --server config/server-settings.yaml") do |s|
-    options[:server] = s
+    $OPTIONS[:server] = s
   end
   
   opts.on("-w", "--write", "Write out configuration file after emailing the tweets.") do |n|
     if(n) then puts "File is saved as config/supplied_username.yaml."; end
-    options[:write_config] = true
+     $OPTIONS[:write_config] = true
   end
   
   opts.on_tail("-h", "--help", "Show this message.") do
@@ -74,11 +74,11 @@ module TweetMail
   
   def run
     #Set up SMTP settings
-    server = TweetMail::Helpers::read_config(@options[:server])
+    server = TweetMail::Helpers::read_config(options[:server])
     TweetMail::Helpers::set_mailer_smtp_settings(server)
     
     # Set attributes from command line arguments or config file
-    if config = @options[:config]
+    if config = options[:config]
       ostruct = TweetMail::Helpers::read_config(config)
       @username,@email,@since = [ ostruct.username, ostruct.email, ostruct.since ]
     else
@@ -97,7 +97,7 @@ module TweetMail
     
     # Write a new configuration file for later use
     
-    if @options[:write_config]
+    if options[:write_config]
       TweetMail::Helpers::write_config(@username, @email, @since)
     end
     
@@ -111,6 +111,6 @@ module TweetMail
   
 end
 
-tm = App.new( ARGV, options )
+tm = App.new( ARGV, $OPTIONS )
 tm.extend TweetMail
 tm.run
