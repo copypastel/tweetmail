@@ -15,12 +15,22 @@ Dependencies
 * actionmailer
 * twitter
 
+For the web-server...
+________
+
+* sinatra
+
 Usage
 -----
 
 Edit `config/server-settings.template.yaml` by entering your SMTP server's information for emailing and save it as config.yaml.  The example is set up for gmail.  If you wish you may edit `user-config.template.yaml` and supply it as a command line option specified later.
 
 Run `bin/tweetmail` with a twitter username and an email to send the @reply twitters to. It's suggested to run the script with `-w` to write a config file that keeps track of the latest @reply twitter that was sent. Afterwards, run `bin/tweetmail` with the `-c` option, specifying the previous config file which should rest neatly inside `config/`.  You need to have a server settings config file located at `config/server-settings.yaml`.  If you have more then one server settings file you can use -s to specify which file.
+
+Web Server
+----------
+
+The Web Server is used in case you want to set up a service for several people to sign up at a local place.  It maintains its own daemon so you don't have to keep modifying your cron jobs.  The base server is sinatra.  To run the server run `bin/tweetmail_server`.
 
 Lessons Learned
 ---------------

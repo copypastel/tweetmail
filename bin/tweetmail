@@ -6,13 +6,16 @@
 # Standard libraries
 %w:optparse optparse/date optparse/time ostruct:.each {|lib| require lib}
 
+def rel(path)
+  File.join(File.dirname(__FILE__),path)
+end
 # Local libs
-%w:lib/twitter_ext lib/tweet_mail lib/helpers:.each {|lib| require lib}
+[rel('../lib/twitter_ext'), rel('../lib/tweet_mail'), rel('../lib/helpers')].each {|lib| require lib}
 
 # Option Parsing
 #default options
 $OPTIONS = {
-  :config => File.join(File.dirname(__FILE__), "..","config","user-config.yaml")
+  :config => File.join(File.dirname(__FILE__), "..","config","user-config.yaml"),
   :server => File.join(File.dirname(__FILE__),'..','config','server-settings.yaml')
 }
 
@@ -78,7 +81,7 @@ module TweetMail
     TweetMail::Helpers::set_mailer_smtp_settings(server)
     
     # Set attributes from command line arguments or config file
-    if config = options[:config]
+    if args.empty?
       ostruct = TweetMail::Helpers::read_config(config)
       @username,@email,@since = [ ostruct.username, ostruct.email, ostruct.since ]
     else
@@ -103,7 +106,7 @@ module TweetMail
     
     # Log what just happened
     
-    File.open(File.join(File.dirname(__FILE__), '..','log','log.txt', 'a')) do |file|
+    File.open(File.join(File.dirname(__FILE__), '..','log','log.txt'),'w') do |file|
       file << "Sent #{@replies.size} @replies to #{@email} at around #{Time.now.strftime("%H:%M%p %Z on %B %d, %Y")}.\n"
     end
     

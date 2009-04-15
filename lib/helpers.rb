@@ -7,7 +7,7 @@ module TweetMail
   module Helpers
     def self.write_config(username, email, since)
       body = OpenStruct.new :username => username, :email => email, :since => since
-      filename = 'config/' + username + '.yaml'
+      filename = File.join(File.dirname(__FILE__),'..','config/', username + '.yaml')
       config = File.open( filename, 'w' )
       config << YAML::dump(body)
       config.close
