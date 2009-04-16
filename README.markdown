@@ -17,8 +17,8 @@ Dependencies
 
 For the web-server...
 ________
-
 * sinatra
+* simple-daemon
 
 Usage
 -----

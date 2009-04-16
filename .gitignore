@@ -1,3 +1,4 @@
 config/*
 !config/*.template.yaml
 log/*
+.DS_Store
