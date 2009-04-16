@@ -1,6 +1,7 @@
 libdir = File.dirname(__FILE__)
 
 require "#{libdir}/../actionmailer-2.3.2/lib/actionmailer"
+require "#{libdir}/../actionmailer-2.3.2/lib/smtp_tls}"
 
 # Actionmailer config
 ActionMailer::Base.raise_delivery_errors = true
