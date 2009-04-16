@@ -1,7 +1,7 @@
 libdir = File.dirname(__FILE__)
 
-require "#{libdir}/../actionmailer-2.3.2/lib/actionmailer"
-require "#{libdir}/../actionmailer-2.3.2/lib/smtp_tls}"
+require "actionmailer"
+require File.join(File.dirname(__FILE__),"smtp_tls")
 
 # Actionmailer config
 ActionMailer::Base.raise_delivery_errors = true
@@ -29,14 +29,14 @@ module Tweetmail
       html
     end
     
-    def self.send(email,body_html)
+    def self.send(email,replies)
       unless replies == []
         body_html = Tweetmail::Mailer::format_replies(replies)
         Notifier.deliver_tweet_replies(email,body_html)
       end
     end
     
-    def self.set_mailer_smtp_settings(settings)
+    def self.set_smtp_settings(settings)
       ServerSettings.set(settings)
       ActionMailer::Base.smtp_settings = ServerSettings.get
     end

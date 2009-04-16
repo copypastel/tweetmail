@@ -1,60 +1,6 @@
 #!/usr/bin/env ruby -KU
 libdir = File.join(File.dirname(__FILE__),'..','lib')
-$LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
-# Standard libraries
-%w:optparse optparse/date optparse/time:.each {|lib| require lib}
-# Frozen gems
-%w:twitter-0.6.4/lib/twitter:.each {|lib| require lib}
-# Local libs
-%w:tweetmail:.each {|lib| require lib}
-
-# Option Parsing
-# default options
-$OPTIONS = {
-  :config => File.join(File.dirname(__FILE__), "..","config","user-config.yaml"),
-  :server => File.join(File.dirname(__FILE__),'..','config','server-settings.yaml')
-}
-
-parser = OptionParser.new do |opts|
-  opts.banner = "Usage: tweetmail [username] [email]"
-
-  opts.separator ""
-  opts.separator "Options:"
-  
-  puts opts.class
-
-  opts.on("-d", "--date ID", "Email @reply tweets since a specified tweet id, e.g. --since 1378993302") do |d|
-    $OPTIONS[:since] = s
-    @validator[:since] = true
-  end
-  
-  opts.on("-c", "--config FILE", "Configuration file for twitter user, e.g. --config config/ecin.yaml") do |c|
-    $OPTIONS[:config] = c
-    @validator[:config] = true
-  end
-  
-  opts.on("-s", "--server FILE", "Configuration file for server, e.g. --server config/server-settings.yaml") do |s|
-    $OPTIONS[:server] = s
-    @validator[:server] = true
-  end
-  
-  opts.on("-w", "--write", "Write out configuration file after emailing the tweets.") do |n|
-    $OPTIONS[:write_config] = n
-    @validator[:write_config] = true
-  end
-  
-  opts.on_tail("-h", "--help", "Show this message.") do
-    puts opts
-    exit
-  end
-end
-
-parser.parse! ARGV
-if(@validator[config] and @validator[:write_config])
-elsif (ARGV.length != 2 or (ARGV[1] =~ /\w+@\w+\.\w+/).nil?) and 
-  puts parser
-  exit
-end
+require "#{libdir}/tweetmail"
 
 class App
   
@@ -68,51 +14,6 @@ class App
   
 end
 
-module TweetMail
-  
-  Twitter.extend TwitterExt
-  
-  attr_accessor :username, :email, :since
-  
-  def run
-    #Set up SMTP settings
-    server = TweetMail::Helpers::read_config(options[:server])
-    TweetMail::Helpers::set_mailer_smtp_settings(server)
-    
-    # Set attributes from command line arguments or config file
-    if args.empty?
-      ostruct = TweetMail::Helpers::read_config(options[:config])
-      @username,@email,@since = [ ostruct.username, ostruct.email, ostruct.since ]
-    else
-      @username,@email,@since = [ args[0], args[1], options[:since] ]
-    end
-    
-    # Get the @reply tweets
-    @replies = Twitter::Replies(@username, @since)
-    
-    # Send out emails
-    
-    unless @replies.empty?
-      TweetMail::send(@email, @replies) 
-      @since = @replies.first.id
-    end
-    
-    # Write a new configuration file for later use
-    
-    if options[:write_config]
-      TweetMail::Helpers::write_config(@username, @email, @since)
-    end
-    
-    # Log what just happened
-    
-    File.open(File.join(File.dirname(__FILE__), '..','log','log.txt'),'w') do |file|
-      file << "Sent #{@replies.size} @replies to #{@email} at around #{Time.now.strftime("%H:%M%p %Z on %B %d, %Y")}.\n"
-    end
-    
-  end
-  
-end
-
-tm = App.new( ARGV, $OPTIONS )
-tm.extend TweetMail
-tm.run
+tweetmail = App.new( ARGV, $OPTIONS )
+tweetmail.extend Tweetmail::App
+tweetmail.run
