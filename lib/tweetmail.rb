@@ -8,7 +8,7 @@ require 'rubygems'
 require 'tweetmail/helpers'
 require 'tweetmail/mailer'
 require 'tweetmail/twitter_ext'
-require 'tweetmail/command_line'
+require 'tweetmail/command_parser'
 require 'tweetmail/app'
 
 Twitter.extend Tweetmail::TwitterExt

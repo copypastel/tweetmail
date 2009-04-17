@@ -32,7 +32,7 @@ module Tweetmail
       # Write a new configuration file for later use
 
       if options[:write_config]
-        TweetMail::Helpers::write_config(@username, @email, @since)
+        Tweetmail::Helpers::write_config(@username, @email, @since)
       end
 
       # Log what just happened

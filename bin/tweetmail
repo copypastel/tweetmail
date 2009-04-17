@@ -13,7 +13,9 @@ class App
   end
   
 end
+#parse commandline
+options = Tweetmail::CommandParser.parse(ARGV)
 
-tweetmail = App.new( ARGV, $OPTIONS )
+tweetmail = App.new( ARGV, options )
 tweetmail.extend Tweetmail::App
 tweetmail.run
