@@ -1,8 +1,7 @@
-#!/usr/bin/env ruby -KU
+#!/usr/bin/env ruby
 
 require 'rubygems'
 require 'simple-daemon'
-require File.join(File.dirname(__FILE__),'..','lib','helpers')
 
 class Fixnum
   def minutes
@@ -14,16 +13,13 @@ class Processor < SimpleDaemon::Base
   SimpleDaemon::WORKING_DIRECTORY = File.join(File.dirname(__FILE__),'..','webserver')
 
   def self.start
-    command = "ruby "+File.join(File.dirname(__FILE__),'..','webserver','tweetmail_server.rb')
+    command = "ruby "+'tweetmail_server.rb'
     system(command)
-    loop do
-      sleep(10.minutes)
-      Tweetmail::Helpers::send_all_configs()
-    end
   end
 
   def self.stop
-    #implement
+    pid = `ps -x | grep tweetmail_server.rb`.split(' ')[0]
+    `kill -s 9 #{pid}`
   end
 end
 
