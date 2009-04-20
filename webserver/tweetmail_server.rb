@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'sinatra'
 
-require '../gem/cronedit-0.3.0/lib/cronedit'
+require File.join(File.dirname(__FILE__),'../gem/cronedit-0.3.0/lib/cronedit')
 
 def relative(path)
   File.join(File.dirname(__FILE__),path)
